@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NimbleCat — Make Your Business Digital</title>
+<meta name="description" content="NimbleCat is an Auckland digital studio, est. 2012. Websites, iOS & Android apps, revamps and marketing for businesses that move fast.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.css">
+<style>
+:root{
+  --ink:#0b0b0b; --bone:#f1ede4; --y:#f5c518; --mute:#8a867e;
+  --bg:#0b0b0b; --fg:#f1ede4; --acc:#f5c518;
+  --gut:clamp(16px,3vw,48px);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --sans:'Archivo',system-ui,sans-serif;
+  --serif:'Instrument Serif',Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);overflow-x:clip;font-variation-settings:"wdth" 100}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--y);color:var(--ink)}
+.serif{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none}
+.label{font:500 .74rem/1.2 var(--sans);text-transform:uppercase;letter-spacing:.12em}
+.label b{color:var(--y);font-weight:500}
+
+/* ---------- cursor ---------- */
+.has-cursor,.has-cursor *{cursor:none!important}
+.cursor,.cursor-view{position:fixed;left:0;top:0;pointer-events:none;z-index:9998;border-radius:50%}
+.cursor{width:14px;height:14px;margin:-7px 0 0 -7px;background:var(--bone);mix-blend-mode:difference}
+.cursor-view{width:104px;height:104px;margin:-52px 0 0 -52px;background:var(--y);color:var(--ink);display:grid;place-items:center;font:700 .78rem/1 var(--sans);text-transform:uppercase;letter-spacing:.1em;transform:scale(0)}
+.cursor, .cursor-view{display:none}
+.has-cursor .cursor,.has-cursor .cursor-view{display:grid}
+
+/* ---------- loader ---------- */
+.loader{position:fixed;inset:0;z-index:9000;background:var(--ink);color:var(--bone);display:flex;flex-direction:column;justify-content:space-between;padding:var(--gut)}
+.loader__top,.loader__bot{display:flex;justify-content:space-between;align-items:flex-end}
+.loader__eyes{position:absolute;left:50%;top:50%;width:min(320px,60vw);transform:translate(-50%,-50%)}
+.loader__count{font-weight:800;font-size:clamp(5rem,18vw,16rem);line-height:.8;letter-spacing:-.05em;font-variant-numeric:tabular-nums;font-variation-settings:"wdth" 62}
+.loader__bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--y);transform-origin:left;transform:scaleX(0)}
+.curtain{position:fixed;inset:0;z-index:9001;transform:translateY(101%);will-change:transform;pointer-events:none;border-radius:50% 50% 0 0/14vh 14vh 0 0}
+.curtain--y{background:var(--y)}
+.curtain--k{background:var(--ink);z-index:9002}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:calc(var(--gut)*.7) var(--gut);mix-blend-mode:difference;color:var(--bone)}
+.brand{display:flex;align-items:center;gap:.7rem;font-weight:700;font-size:1.05rem;letter-spacing:-.02em}
+.brand svg{width:42px;height:auto}
+.brand span em{font-family:var(--serif);font-weight:400;font-size:1.2em;letter-spacing:0}
+.nav__links{display:flex;gap:2.2rem}
+.nav__links a{position:relative;font:500 .78rem/1.2 var(--sans);text-transform:uppercase;letter-spacing:.12em;overflow:hidden;display:inline-block}
+.nav__links a span{display:block;transition:transform .6s var(--ease)}
+.nav__links a span:last-child{position:absolute;top:0;left:0;transform:translateY(130%);color:var(--y)}
+.nav__links a:hover span:first-child{transform:translateY(-130%)}
+.nav__links a:hover span:last-child{transform:translateY(0)}
+.nav__cta{font:600 .78rem/1 var(--sans);text-transform:uppercase;letter-spacing:.1em;border:1px solid currentColor;border-radius:99px;padding:.95rem 1.4rem;display:inline-flex;gap:.6rem;align-items:center}
+.nav__cta i{width:7px;height:7px;border-radius:50%;background:var(--y);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--y);transform-origin:left;transform:scaleX(0);z-index:600}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:100svh;padding:calc(var(--gut)*3.6) var(--gut) var(--gut);display:flex;flex-direction:column;justify-content:space-between;overflow:clip}
+.hero__meta{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:1rem;color:var(--mute)}
+.hero__meta strong{color:var(--fg);font-weight:500}
+.hero__title{font-weight:800;font-size:clamp(3rem,14.4vw,24rem);line-height:.8;letter-spacing:-.045em;text-transform:uppercase;margin:4vh 0 5vh;--w:100;--g:800}
+.hero__line{display:block;white-space:nowrap;overflow:clip;padding:.04em .02em .02em;margin:-.04em 0 0;font-variation-settings:"wdth" var(--w),"wght" var(--g)}
+.hero__line .char{display:inline-block;will-change:transform;font-variation-settings:"wdth" calc(var(--w) + var(--ws,0)),"wght" var(--g,800)}
+.hero__word{--ws:0}
+.hero__l2{padding-left:7vw}
+.hero__l3{color:var(--y);display:flex;align-items:flex-end;gap:2vw}
+.hero__l3 .serif{font-size:.16em;line-height:1.1;color:var(--fg);padding-bottom:.35em;white-space:normal;max-width:9em}
+.hero__foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:2rem}
+.hero__intro{font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,1.9vw,2rem);line-height:1.1;max-width:20ch}
+.hero__scroll{justify-self:end;display:flex;align-items:center;gap:.8rem}
+.hero__scroll i{display:block;width:1px;height:46px;background:var(--fg);transform-origin:top;animation:drip 2.2s var(--ease) infinite}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.badge{position:absolute;right:var(--gut);top:43vh;width:clamp(110px,11vw,180px);aspect-ratio:1}
+.badge svg.ring{width:100%;height:100%;animation:spin 16s linear infinite}
+.badge text{font:600 9.2px var(--sans);letter-spacing:.24em;text-transform:uppercase;fill:var(--fg)}
+.badge .eyes{position:absolute;left:50%;top:50%;width:46%;transform:translate(-50%,-50%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- bands ---------- */
+.bands{position:relative;height:clamp(240px,38vh,420px);overflow:clip;display:grid;place-items:center}
+.band{position:absolute;left:-5vw;width:110vw;padding:1.1rem 0;overflow:hidden;white-space:nowrap}
+.band--y{background:var(--y);color:var(--ink);transform:rotate(-4deg);z-index:2}
+.band--o{background:var(--ink);color:transparent;-webkit-text-stroke:1.2px var(--bone);transform:rotate(3deg);border-block:1px solid #262626}
+.band__track{display:inline-flex;will-change:transform}
+.band__track span{font-weight:800;font-size:clamp(2.4rem,6vw,6.4rem);line-height:1;letter-spacing:-.03em;text-transform:uppercase;padding-right:.5em;display:inline-flex;align-items:center;gap:.5em;font-variation-settings:"wdth" 112}
+.band__track span::after{content:"";width:.5em;height:.5em;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 0l2.4 7.6L20 10l-7.6 2.4L10 20l-2.4-7.6L0 10l7.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 0l2.4 7.6L20 10l-7.6 2.4L10 20l-2.4-7.6L0 10l7.6-2.4z'/%3E%3C/svg%3E") center/contain no-repeat}
+.band--o .band__track span::after{background:var(--y)}
+
+/* ---------- story ---------- */
+.section{padding:clamp(96px,16vh,200px) var(--gut)}
+.story{display:grid;grid-template-columns:minmax(180px,1fr) 3fr;gap:4vw}
+.story__aside{position:relative}
+.story__aside .stick{position:sticky;top:18vh;display:flex;flex-direction:column;gap:1.4rem}
+.story__aside .eyes{width:70px}
+.story__big{font-weight:500;font-size:clamp(1.9rem,4.15vw,4.8rem);line-height:1.04;letter-spacing:-.035em;text-indent:12%}
+.story__big .serif{font-size:1.08em}
+.story__big .word{will-change:opacity;text-indent:0}
+.story__row{display:grid;grid-template-columns:1fr 1fr;gap:4vw;margin-top:clamp(48px,9vh,110px);align-items:end}
+.story__small{font-size:clamp(1rem,1.15vw,1.2rem);line-height:1.55;color:#bdb8ae;max-width:44ch}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:clamp(150px,12vw,190px);aspect-ratio:1;border-radius:50%;background:var(--y);color:var(--ink);font:700 .8rem/1.15 var(--sans);text-transform:uppercase;letter-spacing:.1em;text-align:center;overflow:hidden;isolation:isolate}
+.btn::before{content:"";position:absolute;inset:0;background:var(--bone);border-radius:50%;transform:translateY(101%) scale(1.2);transition:transform .7s var(--ease);z-index:-1}
+.btn:hover::before{transform:translateY(0) scale(1.2)}
+.btn .btn__in{display:block;pointer-events:none}
+
+/* ---------- work ---------- */
+.work{position:relative;overflow:clip}
+.work__pin{height:100svh;display:flex;flex-direction:column;justify-content:center;gap:4vh;padding:calc(var(--gut)*3) 0 var(--gut)}
+.work__head{display:flex;justify-content:space-between;align-items:flex-end;padding:0 var(--gut);position:relative;z-index:2}
+.work__title{font-weight:800;font-size:clamp(2.6rem,6vw,7rem);letter-spacing:-.04em;line-height:.85;text-transform:uppercase}
+.work__title .serif{text-transform:none;color:var(--y)}
+.work__count{font-weight:700;font-size:clamp(1.4rem,2.4vw,2.6rem);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:flex;align-items:baseline;gap:.4rem}
+.work__count small{color:var(--mute);font-size:.55em}
+.work__bar{height:1px;background:#2a2a2a;margin:0 var(--gut);position:relative}
+.work__bar i{position:absolute;inset:0;background:var(--y);transform-origin:left;transform:scaleX(0)}
+.work__ghost{position:absolute;bottom:-4vw;left:0;font-weight:900;font-size:34vw;line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px #222;white-space:nowrap;pointer-events:none;z-index:0;font-variation-settings:"wdth" 125}
+.work__track{display:flex;gap:clamp(28px,4vw,80px);align-items:center;padding:0 var(--gut);width:max-content;position:relative;z-index:1}
+.card{position:relative;flex:none;display:flex;flex-direction:column;gap:1rem}
+.card__num{position:absolute;top:-.55em;left:-.1em;z-index:2;font-weight:800;font-size:clamp(3rem,6vw,7rem);line-height:1;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:1.2px var(--bone);font-variation-settings:"wdth" 62;pointer-events:none}
+.card__media{height:54vh;aspect-ratio:var(--r);max-width:52vw;overflow:hidden;border-radius:6px;background:#161616;position:relative}
+.card__media img{position:absolute;top:0;left:-10%;width:120%;max-width:none;height:100%;object-fit:cover;object-position:top center;transition:filter .8s var(--ease),scale 1.2s var(--ease)}
+.card:hover .card__media img{scale:1.05}
+.card__meta{display:flex;flex-direction:column;gap:.45rem}
+.card__meta h3{font-weight:600;font-size:clamp(1.1rem,1.4vw,1.5rem);letter-spacing:-.02em}
+.card__meta span{color:var(--mute)}
+.card--cta .card__media{display:grid;place-items:center;background:var(--y);color:var(--ink);text-align:center;padding:2rem}
+.card--cta .card__media p{font-family:var(--serif);font-style:italic;font-size:clamp(2.2rem,4vw,4.4rem);line-height:.95}
+.card--cta .card__media p b{display:block;font:800 .8rem/1 var(--sans);font-style:normal;letter-spacing:.14em;text-transform:uppercase;margin-top:1.6rem}
+
+/* ---------- services ---------- */
+.svc__head{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;margin-bottom:clamp(40px,7vh,90px)}
+.svc__head h2{font-weight:800;font-size:clamp(2.6rem,6vw,7rem);letter-spacing:-.04em;line-height:.85;text-transform:uppercase}
+.svc__head p{max-width:30ch;color:#bdb8ae;line-height:1.5}
+.svc-list{border-top:1px solid #2a2a2a}
+.svc{position:relative;display:grid;grid-template-columns:5rem 1fr minmax(0,26rem) 3rem;align-items:center;gap:2vw;padding:clamp(18px,3vh,34px) 0;border-bottom:1px solid #2a2a2a;isolation:isolate;overflow:hidden}
+.svc::before{content:"";position:absolute;inset:0;background:var(--y);transform:scaleY(0);transform-origin:bottom;transition:transform .7s var(--ease);z-index:-1}
+.svc:hover::before{transform:scaleY(1)}
+.svc:hover{color:var(--ink)}
+.svc__n{font:500 .8rem/1 var(--sans);letter-spacing:.1em;padding-left:.4rem;transition:padding .7s var(--ease)}
+.svc__t{font-weight:800;font-size:clamp(2.8rem,8.4vw,9.5rem);line-height:.86;letter-spacing:-.045em;text-transform:uppercase;font-variation-settings:"wdth" 75;transition:font-variation-settings .9s var(--ease),transform .9s var(--ease)}
+.svc:hover .svc__t{font-variation-settings:"wdth" 125;transform:translateX(1.2vw)}
+.svc:hover .svc__n{padding-left:1.4rem}
+.svc__d{font-size:.95rem;line-height:1.5;color:var(--mute);transition:color .5s}
+.svc__d strong{display:block;color:var(--fg);font-weight:600;margin-bottom:.35rem;transition:color .5s}
+.svc:hover .svc__d,.svc:hover .svc__d strong{color:var(--ink)}
+.svc__arrow{font-size:2rem;justify-self:end;padding-right:.6rem;transition:transform .7s var(--ease)}
+.svc:hover .svc__arrow{transform:rotate(45deg)}
+.preview{position:fixed;left:0;top:0;width:clamp(220px,20vw,340px);aspect-ratio:4/5;margin:calc(clamp(220px,20vw,340px)*-.625) 0 0 calc(clamp(220px,20vw,340px)*-.5);pointer-events:none;z-index:400;border-radius:8px;overflow:hidden;transform:scale(0);background:#111}
+.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;clip-path:inset(100% 0 0 0)}
+
+/* ---------- numbers ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #2a2a2a}
+.stat{padding:2.2rem 1.4rem 0 0;position:relative}
+.stat + .stat{padding-left:1.4rem;border-left:1px solid #2a2a2a}
+.stat__n{font-weight:800;font-size:clamp(3.2rem,8vw,9rem);line-height:.85;letter-spacing:-.05em;font-variant-numeric:tabular-nums;font-variation-settings:"wdth" 70;display:flex}
+.stat__n sup{font-size:.4em;color:var(--acc,#f5c518);line-height:1}
+.stat p{margin-top:1rem;opacity:.6}
+.price{position:relative;padding:clamp(120px,22vh,260px) var(--gut);text-align:center;overflow:clip}
+.price .label{display:block;margin-bottom:3vh}
+.price__from{font-family:var(--serif);font-style:italic;font-size:clamp(2.4rem,6vw,7rem);line-height:1}
+.price__num{font-weight:900;font-size:clamp(7rem,26vw,34rem);line-height:.8;letter-spacing:-.06em;--w:62;font-variation-settings:"wdth" var(--w);display:inline-block;will-change:transform}
+.price__copy{max-width:44ch;margin:5vh auto 0;font-size:clamp(1rem,1.2vw,1.25rem);line-height:1.5}
+
+/* ---------- quote ---------- */
+.quote{display:grid;grid-template-columns:minmax(180px,1fr) 3fr;gap:4vw}
+.quote__mark{font-family:var(--serif);font-size:clamp(8rem,16vw,18rem);line-height:1;color:var(--y);height:.6em;margin-top:2rem;overflow:visible}
+.quote blockquote{font-family:var(--serif);font-size:clamp(1.9rem,4.4vw,5rem);line-height:1.02;letter-spacing:-.01em}
+.quote blockquote .line{padding-bottom:.06em}
+.quote cite{display:flex;align-items:center;gap:1rem;margin-top:3rem;font-style:normal}
+.quote cite img{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:left top}
+
+/* ---------- footer ---------- */
+.footer{position:relative;background:var(--bone);color:var(--ink);overflow:clip;border-radius:clamp(20px,3vw,48px) clamp(20px,3vw,48px) 0 0}
+.footer__in{padding:clamp(110px,16vh,180px) var(--gut) var(--gut);min-height:100svh;display:flex;flex-direction:column;justify-content:space-between}
+.footer__top{display:flex;justify-content:space-between;align-items:flex-start;gap:2rem}
+.footer__legal img{width:clamp(130px,11vw,180px)}
+.talk{position:relative;margin:6vh 0}
+.talk h2{font-weight:900;font-size:clamp(4.4rem,17.5vw,26rem);line-height:.78;letter-spacing:-.06em;text-transform:uppercase}
+.talk h2 .tline{display:block;overflow:clip;padding-top:.03em}
+.talk h2 .tline:last-child{padding-left:16vw}
+.talk h2 .char{display:inline-block;--w:100;font-variation-settings:"wdth" var(--w)}
+.talk h2 .serif{font-size:.3em;vertical-align:top;letter-spacing:0;color:#9b958a}
+.talk__btn{position:absolute;right:6vw;top:50%;width:clamp(150px,15vw,250px);aspect-ratio:1;margin-top:calc(clamp(150px,15vw,250px)*-.5);border-radius:50%;background:var(--ink);color:var(--bone);display:grid;place-items:center;text-align:center;font:600 clamp(.78rem,.95vw,1rem)/1.3 var(--sans);z-index:3;isolation:isolate;overflow:hidden}
+.talk__btn::before{content:"";position:absolute;inset:0;background:var(--y);border-radius:50%;transform:scale(0);transition:transform .7s var(--ease);z-index:-1}
+.talk__btn:hover::before{transform:scale(1)}
+.talk__btn:hover{color:var(--ink)}
+.talk__btn span{pointer-events:none}
+.talk__btn em{display:block;font-family:var(--serif);font-size:1.7em;margin-bottom:.3rem}
+.footer__grid{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:2rem;align-items:end;border-top:1px solid #cbc5b8;padding-top:2rem}
+.footer__grid .label{color:#79736a;margin-bottom:.7rem;display:block}
+.footer__grid p,.footer__grid a.big{font-size:clamp(1rem,1.3vw,1.35rem);font-weight:500;letter-spacing:-.01em}
+.top-btn{width:84px;height:84px;border-radius:50%;border:1px solid var(--ink);display:grid;place-items:center;font-size:1.4rem;transition:background .4s,color .4s}
+.top-btn:hover{background:var(--ink);color:var(--y)}
+.footer__legal{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-top:2.4rem;color:#79736a;font-size:.8rem}
+
+/* ---------- eyes ---------- */
+.eyes .lid{transform-box:fill-box;transform-origin:center}
+
+/* ---------- responsive ---------- */
+@media (max-width:1024px){
+  .svc{grid-template-columns:3rem 1fr 2rem}
+  .svc__d{grid-column:2/3}
+  .svc__arrow{grid-row:1;grid-column:3}
+}
+@media (max-width:768px){
+  .nav__links{display:none}
+  .nav__cta{padding:.8rem 1rem}
+  .hero__meta{grid-template-columns:1fr 1fr;row-gap:.5rem}
+  .hero__l2{padding-left:0}
+  .hero__l3{flex-direction:column;align-items:flex-start;gap:.6rem}
+  .hero__l3 .serif{order:2;font-size:clamp(1rem,4.5vw,1.3rem);max-width:none;padding:0}
+  .hero__foot{grid-template-columns:1fr;gap:1.4rem}
+  .hero__foot .label{display:none}
+  .hero__scroll{justify-self:start}
+  .badge{display:none}
+  .story,.quote{grid-template-columns:1fr;gap:2.4rem}
+  .story__aside .stick{position:static;flex-direction:row;align-items:center;justify-content:space-between}
+  .story__big{text-indent:0}
+  .story__row{grid-template-columns:1fr;gap:2.4rem}
+  .work__pin{height:auto;padding:clamp(96px,16vh,200px) 0 0}
+  .work__ghost{display:none}
+  .work__count{display:none}
+  .work__track{flex-direction:column;width:auto;align-items:stretch;gap:56px;padding-top:24px}
+  .card__media{height:auto;width:100%;max-width:none;aspect-ratio:4/3}
+  .card__num{font-size:3.4rem}
+  .card__meta{flex-direction:column;gap:.3rem}
+  .svc__head{flex-direction:column;align-items:flex-start}
+  .svc__t{font-size:clamp(2.6rem,13vw,4rem)}
+  .preview{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat:nth-child(3){padding-left:0;border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid #2a2a2a;margin-top:2rem}
+  .talk h2 .tline:last-child{padding-left:0}
+  .talk__btn{position:relative;right:auto;top:auto;margin:2.4rem 0 0;width:170px}
+  .footer__top{flex-direction:column-reverse}
+  .footer__grid{grid-template-columns:1fr 1fr}
+  .footer__legal{flex-direction:column;gap:.4rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .badge svg.ring,.hero__scroll i,.nav__cta i{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- cursor -->
+<div class="cursor" aria-hidden="true"></div>
+<div class="cursor-view" aria-hidden="true"><span>View ↗</span></div>
+
+<!-- loader -->
+<div class="loader" aria-hidden="true">
+  <div class="loader__top"><span class="label">NimbleCat <b>©</b></span><span class="label">Auckland, NZ</span></div>
+  <svg class="loader__eyes eyes" viewBox="0 0 220 80">
+    <g transform="translate(56 40) rotate(11)"><g class="lid"><path d="M-46 0Q0-40 46 0Q0 40-46 0Z" fill="#f5c518"/><ellipse class="pupil" rx="5.5" ry="27" fill="#0b0b0b"/></g></g>
+    <g transform="translate(164 40) rotate(-11)"><g class="lid"><path d="M-46 0Q0-40 46 0Q0 40-46 0Z" fill="#f5c518"/><ellipse class="pupil" rx="5.5" ry="27" fill="#0b0b0b"/></g></g>
+  </svg>
+  <div class="loader__bot"><span class="label">Make your business digital</span><span class="loader__count">000</span></div>
+  <i class="loader__bar"></i>
+</div>
+<div class="curtain curtain--y" aria-hidden="true"></div>
+<div class="curtain curtain--k" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#top" data-cursor="link" aria-label="NimbleCat home">
+    <svg class="eyes" viewBox="0 0 64 24" aria-hidden="true">
+      <g transform="translate(16 12) rotate(11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+      <g transform="translate(48 12) rotate(-11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+    </svg>
+    <span>Nimble<em>Cat</em></span>
+  </a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#story" data-cursor="link"><span>Story</span><span aria-hidden="true">Story</span></a>
+    <a href="#work" data-cursor="link"><span>Work</span><span aria-hidden="true">Work</span></a>
+    <a href="#services" data-cursor="link"><span>Services</span><span aria-hidden="true">Services</span></a>
+    <a href="#contact" data-cursor="link"><span>Contact</span><span aria-hidden="true">Contact</span></a>
+  </nav>
+  <a class="nav__cta" href="#contact" data-cursor="link" data-magnetic><i></i>Let's talk</a>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__meta label">
+      <span><strong>(Digital studio)</strong></span>
+      <span>Auckland, <strong>New Zealand</strong></span>
+      <span>Est. <strong>2012</strong></span>
+      <span>NZT <strong class="clock">--:--:--</strong></span>
+    </div>
+
+    <h1 class="hero__title" aria-label="Make your business digital">
+      <span class="hero__line hero__l1" aria-hidden="true">Make your</span>
+      <span class="hero__line hero__l2" aria-hidden="true">Business</span>
+      <span class="hero__line hero__l3" aria-hidden="true"><span class="hero__word">Digital</span><span class="serif">— websites, apps &amp; brands built by Kiwis since 2012</span></span>
+    </h1>
+
+    <div class="badge" aria-hidden="true">
+      <svg class="ring" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs><text><textPath href="#circ">Make your business digital · Est 2012 · </textPath></text></svg>
+      <svg class="eyes" viewBox="0 0 64 24">
+        <g transform="translate(16 12) rotate(11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+        <g transform="translate(48 12) rotate(-11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+      </svg>
+    </div>
+
+    <div class="hero__foot">
+      <p class="hero__intro">Beautiful websites &amp; apps with great functionality — for businesses ready to move.</p>
+      <span class="label">Web Development — Design — App Development</span>
+      <span class="hero__scroll label">Scroll to prowl <i></i></span>
+    </div>
+  </section>
+
+  <!-- BANDS -->
+  <section class="bands" aria-hidden="true">
+    <div class="band band--o"><div class="band__track" data-speed="-1"></div></div>
+    <div class="band band--y"><div class="band__track" data-speed="1"></div></div>
+  </section>
+
+  <!-- STORY -->
+  <section class="section story" id="story">
+    <aside class="story__aside">
+      <div class="stick">
+        <span class="label"><b>(01)</b> Our story</span>
+        <svg class="eyes" viewBox="0 0 64 24" aria-hidden="true">
+          <g transform="translate(16 12) rotate(11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+          <g transform="translate(48 12) rotate(-11)"><g class="lid"><path d="M-14 0Q0-12 14 0Q0 12-14 0Z" fill="#f5c518"/><ellipse class="pupil" rx="1.9" ry="8" fill="#0b0b0b"/></g></g>
+        </svg>
+      </div>
+    </aside>
+    <div>
+      <p class="story__big js-fill">NimbleCat was formed in 2012 by some Kiwis with a <span class="serif">big dream.</span> Little money — but incredible determination, passion and the skill set to give businesses <span class="serif">affordable</span> digital solutions that actually work.</p>
+      <div class="story__row">
+        <p class="story__small">We love crafting beautiful websites and apps with great functionality. Web design &amp; development, iOS and Android — a small team with big ambitions, here to make your next tech project a reality.</p>
+        <a class="btn" href="#contact" data-cursor="link" data-magnetic><span class="btn__in">Start a<br>project ↘</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="work" id="work">
+    <div class="work__pin">
+      <div class="work__ghost" aria-hidden="true">Selected work · Selected work</div>
+      <div class="work__head">
+        <h2 class="work__title"><span class="label" style="display:block;margin-bottom:1.2rem"><b>(02)</b> Portfolio</span>Selected <span class="serif">work</span></h2>
+        <div class="work__count"><span class="js-idx">01</span><small>/ 15</small></div>
+      </div>
+      <div class="work__track"></div>
+      <div class="work__bar"><i></i></div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section services" id="services">
+    <div class="svc__head">
+      <h2><span class="label" style="display:block;margin-bottom:1.2rem"><b>(03)</b> Services</span>What we<br><span class="serif" style="color:var(--y)">do best</span></h2>
+      <p>Our team will be happy to assist you — from a first website to a fully published app.</p>
+    </div>
+    <ul class="svc-list">
+      <li class="svc" data-cursor="link" data-img="0">
+        <span class="svc__n">01</span><h3 class="svc__t">Websites</h3>
+        <p class="svc__d"><strong>Website Design &amp; Development</strong>Customised design · Manage your own content · E-commerce &amp; online shop options · Mobile &amp; tablet friendly · Hosting included</p>
+        <span class="svc__arrow">↗</span>
+      </li>
+      <li class="svc" data-cursor="link" data-img="1">
+        <span class="svc__n">02</span><h3 class="svc__t">Apps</h3>
+        <p class="svc__d"><strong>App Development</strong>A customised app built for your business idea. We handle design, build and publishing — ready for people to download.</p>
+        <span class="svc__arrow">↗</span>
+      </li>
+      <li class="svc" data-cursor="link" data-img="2">
+        <span class="svc__n">03</span><h3 class="svc__t">Revamps</h3>
+        <p class="svc__d"><strong>Revamp Your Existing Website</strong>Does it need a bit of love? Higher ranking in Google? Want us to start you a blog?</p>
+        <span class="svc__arrow">↗</span>
+      </li>
+      <li class="svc" data-cursor="link" data-img="3">
+        <span class="svc__n">04</span><h3 class="svc__t">Marketing</h3>
+        <p class="svc__d"><strong>Marketing</strong>Brand &amp; identity · Social media strategy · Ramp up your social efforts · Content marketing</p>
+        <span class="svc__arrow">↗</span>
+      </li>
+    </ul>
+  </section>
+  <div class="preview" aria-hidden="true">
+    <img src="../assets/work/ceres-1.png" alt="">
+    <img src="../assets/work/air-nz.png" alt="">
+    <img src="../assets/work/iprunetreeservices.png" alt="">
+    <img src="../assets/work/TwoBricks.jpg" alt="">
+  </div>
+
+  <!-- NUMBERS -->
+  <section class="section numbers">
+    <span class="label" style="display:block;margin-bottom:2.4rem"><b>(04)</b> Some fun facts</span>
+    <div class="stats">
+      <div class="stat"><div class="stat__n"><span class="js-count" data-to="15">0</span><sup>+</sup></div><p>Years of experience</p></div>
+      <div class="stat"><div class="stat__n"><span class="js-count" data-to="45">0</span><sup>+</sup></div><p>Clients worked with</p></div>
+      <div class="stat"><div class="stat__n"><span class="js-count" data-to="50">0</span><sup>+</sup></div><p>Completed projects</p></div>
+      <div class="stat"><div class="stat__n"><span class="js-count" data-to="1099">0</span><sup>+</sup></div><p>Coffees (and counting)</p></div>
+    </div>
+  </section>
+
+  <section class="price" aria-label="Pricing">
+    <span class="label">Websites, honestly priced</span>
+    <div class="price__from">from</div>
+    <div class="price__num">$750</div>
+    <p class="price__copy">A static website can cost as little as $750. More dynamic websites with e-commerce need more customisation — we'll scope it straight with you.</p>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="section quote">
+    <div><span class="label"><b>(05)</b> Happy clients</span><div class="quote__mark" aria-hidden="true">“</div></div>
+    <figure>
+      <blockquote class="js-lines">Nimblecat had our website up, running and looking great working with our very short deadline. Very professional in all communication to us — it was clear Nimblecat have the expertise to deliver.</blockquote>
+      <cite><img src="../assets/work/iprunetreeservices.png" alt=""><span><strong>iPrune Tree Services</strong><br><span style="color:var(--mute)">Website, delivered on a tight deadline</span></span></cite>
+    </figure>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="footer__in">
+    <div class="footer__top">
+      <span class="label"><b style="color:#b38c00">(06)</b> Get in touch</span>
+      <span class="label">Ready to start your project?</span>
+    </div>
+    <div class="talk">
+      <h2 aria-label="Let's talk"><span class="tline" aria-hidden="true"><span class="js-talk">Let's</span> <span class="serif">(we'd love to)</span></span><span class="tline" aria-hidden="true"><span class="js-talk">Talk.</span></span></h2>
+      <a class="talk__btn" href="mailto:hello@nimblecat.co.nz" data-cursor="link"><span><em>Say hi</em>hello@<br>nimblecat.co.nz</span></a>
+    </div>
+    <div class="footer__grid">
+      <div><span class="label">Email</span><a class="big" href="mailto:hello@nimblecat.co.nz" data-cursor="link">hello@nimblecat.co.nz</a></div>
+      <div><span class="label">Location</span><p>Auckland, New Zealand</p></div>
+      <div><span class="label">Local time</span><p class="clock">--:--:--</p></div>
+      <a class="top-btn" href="#top" data-cursor="link" data-magnetic aria-label="Back to top">↑</a>
+    </div>
+    <div class="footer__legal"><img src="../assets/logo.png" alt="NimbleCat — transforming digital solutions"><span>© 2026 NimbleCat. All rights reserved.</span><span>Transforming digital solutions — Auckland, NZ</span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+
+  /* ---------- data ---------- */
+  const WORK = [
+    ['Ceres Organics', 'ceres-1.png', 'Branding, Mobile, Web', 844 / 787],
+    ['Coast Events', 'screencapture-coastevents-nz-2019-11-13-12_24_34-1.png', 'Branding, Mobile, Web', 0.78],
+    ['Genesis My Account', 'genesis-myaccount.png', 'Branding, Web', 1366 / 737],
+    ['Air New Zealand', 'air-nz.png', 'Web', 0.72],
+    ['TwoBricks', 'TwoBricks.jpg', 'Branding, Mobile, Web', 1492 / 1272],
+    ['iPruneTrees', 'iprunetreeservices.png', 'Web', 1173 / 916],
+    ['Auckland Web Designs', 'aucklandwebdesigns.jpg', 'Branding, Web', 500 / 400],
+    ['ThinkHQ', 'thinkhq.png', 'Mobile, Web', 1127 / 946],
+    ['Fifo Connect', 'fifo-connect-1.jpg', 'Branding, Web', 1384 / 1119],
+    ['HotShotTrader', 'hotshottrader.jpg', 'Branding, Mobile, Web', 400 / 422],
+    ['NZ Typing Services', 'nz-typing-services.png', 'Branding, Web', 1714 / 938],
+    ['Stagecoach', 'stagecoach-1.jpg', 'App, Branding, Mobile, Web', 1705 / 1308],
+    ['Rufus Leonard', 'rufus.jpg', 'Branding, Web', 467 / 400],
+    ['Pizza Express', 'pizza-express.jpg', 'Branding, Web', 400 / 336],
+    ['London Business School', 'LBS.jpg', 'Branding, Web', 1027 / 1239],
+  ];
+  const track = $('.work__track');
+  track.innerHTML = WORK.map(([name, img, tags, r], i) => `
+    <a class="card" href="#contact" data-cursor="view" style="--r:${Math.min(Math.max(r, .72), 1.6).toFixed(3)}">
+      <span class="card__num">${String(i + 1).padStart(2, '0')}</span>
+      <div class="card__media"><img src="../assets/work/${img}" alt="${name} — NimbleCat project" loading="lazy"></div>
+      <div class="card__meta"><h3>${name}</h3><span class="label">${tags.replace(/, /g, ' · ')}</span></div>
+    </a>`).join('') + `
+    <a class="card card--cta" href="#contact" data-cursor="link" style="--r:.8">
+      <span class="card__num">16</span>
+      <div class="card__media"><p>Your business,<br>next.<b>Start a project ↗</b></p></div>
+      <div class="card__meta"><h3>Could be you</h3><span class="label">Web · App · Brand</span></div>
+    </a>`;
+
+  const WORDS = ['Websites', 'Apps', 'E-commerce', 'Revamps', 'Branding', 'Social media', 'Content', 'Hosting'];
+  $$('.band__track').forEach((t, i) => {
+    const words = i ? WORDS : [...WORDS].reverse();
+    const row = words.map(w => `<span>${w}</span>`).join('');
+    t.innerHTML = row + row + row + row;
+  });
+
+  /* ---------- clock ---------- */
+  const fmt = new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const tick = () => $$('.clock').forEach(c => (c.textContent = fmt.format(new Date())));
+  tick(); setInterval(tick, 1000);
+
+  /* ---------- lenis ---------- */
+  let lenis = null;
+  let vel = 0, dir = 1;
+  if (!reduce) {
+    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 1, smoothWheel: true });
+    lenis.on('scroll', e => { ScrollTrigger.update(); vel = e.velocity; if (e.direction) dir = e.direction; });
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    lenis.stop();
+  }
+  $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const target = id === '#top' ? 0 : $(id);
+    if (target === null) return;
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(target, { duration: 1.8, easing: t => 1 - Math.pow(1 - t, 4) });
+    else if (target === 0) scrollTo(0, 0);
+    else target.scrollIntoView();
+  }));
+
+  /* ---------- cursor + magnetic ---------- */
+  addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+  if (fine) {
+    document.documentElement.classList.add('has-cursor');
+    const cur = $('.cursor'), view = $('.cursor-view');
+    const cx = gsap.quickTo(cur, 'x', { duration: .15, ease: 'power3' }), cy = gsap.quickTo(cur, 'y', { duration: .15, ease: 'power3' });
+    const vx = gsap.quickTo(view, 'x', { duration: .55, ease: 'power3' }), vy = gsap.quickTo(view, 'y', { duration: .55, ease: 'power3' });
+    addEventListener('pointermove', e => { cx(e.clientX); cy(e.clientY); vx(e.clientX); vy(e.clientY); }, { passive: true });
+    let state = null;
+    document.addEventListener('pointerover', e => {
+      const t = e.target.closest('[data-cursor]');
+      const s = t ? t.dataset.cursor : null;
+      if (s === state) return;
+      state = s;
+      gsap.to(cur, { scale: s === 'link' ? 4.2 : s === 'view' ? 0 : 1, duration: .5, ease: 'expo.out' });
+      gsap.to(view, { scale: s === 'view' ? 1 : 0, duration: .6, ease: 'expo.out' });
+    });
+    document.addEventListener('pointerleave', () => gsap.to([cur, view], { autoAlpha: 0, duration: .3 }));
+    document.addEventListener('pointerenter', () => gsap.to([cur, view], { autoAlpha: 1, duration: .3 }));
+
+    $$('[data-magnetic]').forEach(el => {
+      const xTo = gsap.quickTo(el, 'x', { duration: .8, ease: 'power3' }), yTo = gsap.quickTo(el, 'y', { duration: .8, ease: 'power3' });
+      const inner = el.querySelector('.btn__in');
+      const ix = inner && gsap.quickTo(inner, 'x', { duration: .8, ease: 'power3' }), iy = inner && gsap.quickTo(inner, 'y', { duration: .8, ease: 'power3' });
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+        xTo(dx * .38); yTo(dy * .38); if (inner) { ix(dx * .18); iy(dy * .18); }
+      });
+      el.addEventListener('pointerleave', () => {
+        gsap.to(el, { x: 0, y: 0, duration: 1.1, ease: 'elastic.out(1,.35)' });
+        if (inner) gsap.to(inner, { x: 0, y: 0, duration: 1.1, ease: 'elastic.out(1,.35)' });
+      });
+    });
+  }
+
+  /* ---------- cat eyes: follow + blink ---------- */
+  const pupils = $$('.pupil').map(p => ({ el: p, sx: gsap.quickSetter(p, 'x'), sy: gsap.quickSetter(p, 'y'), big: !!p.closest('.loader') }));
+  gsap.ticker.add(() => {
+    pupils.forEach(p => {
+      const r = p.el.ownerSVGElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight || !r.width) return;
+      const dx = mouse.x - (r.left + r.width / 2), dy = mouse.y - (r.top + r.height / 2);
+      const a = Math.atan2(dy, dx), d = Math.min(1, Math.hypot(dx, dy) / 400);
+      const m = p.big ? 20 : 6;
+      p.sx(Math.cos(a) * d * m); p.sy(Math.sin(a) * d * m * .25);
+    });
+  });
+  const blink = (targets) => gsap.timeline()
+    .to(targets, { scaleY: .06, duration: .09, ease: 'power2.in' })
+    .to(targets, { scaleY: 1, duration: .22, ease: 'power3.out' });
+  if (!reduce) (function loop() {
+    gsap.delayedCall(2.5 + Math.random() * 3.5, () => { blink($$('.nav .lid, .badge .lid, .story .lid')); loop(); });
+  })();
+
+  /* ---------- preloader ---------- */
+  const intro = gsap.timeline({ paused: true });
+
+  function startSite() {
+    $('.loader').remove(); $$('.curtain').forEach(c => c.remove());
+    if (lenis) lenis.start();
+    intro.play();
+  }
+
+  gsap.set('.curtain', { y: 0, yPercent: 101 });
+  gsap.set('.lid', { transformOrigin: '50% 50%' });
+
+  /* ---------- build after fonts ---------- */
+  document.fonts.ready.then(() => {
+    buildIntro();
+    buildScroll();
+    runLoader();
+  });
+
+  function runLoader() {
+    if (reduce) { startSite(); return; }
+    const counter = { v: 0 };
+    const out = $('.loader__count');
+    const lids = $$('.loader .lid');
+    gsap.set(lids, { scaleY: 0 });
+    const tl = gsap.timeline({ onComplete: startSite });
+    tl.to(lids, { scaleY: 1, duration: .7, ease: 'expo.out', stagger: .06 })
+      .to(counter, { v: 100, duration: 2.4, ease: 'power3.inOut', onUpdate: () => (out.textContent = String(Math.round(counter.v)).padStart(3, '0')) }, .1)
+      .to('.loader__bar', { scaleX: 1, duration: 2.4, ease: 'power3.inOut' }, .1)
+      .fromTo(out, { fontVariationSettings: '"wdth" 62' }, { fontVariationSettings: '"wdth" 125', duration: 2.4, ease: 'power3.inOut' }, .1)
+      .add(() => blink(lids), 1.0)
+      .add(() => blink(lids), 1.9)
+      .to(lids, { scaleY: .04, duration: .2, ease: 'power3.in' }, 2.5)
+      .fromTo('.curtain--y', { yPercent: 101, borderRadius: '50% 50% 0% 0% / 14vh 14vh 0vh 0vh' }, { yPercent: 0, borderRadius: '0% 0% 0% 0% / 0vh 0vh 0vh 0vh', duration: .95, ease: 'expo.inOut' }, 2.6)
+      .fromTo('.curtain--k', { yPercent: 101, borderRadius: '50% 50% 0% 0% / 14vh 14vh 0vh 0vh' }, { yPercent: 0, borderRadius: '0% 0% 0% 0% / 0vh 0vh 0vh 0vh', duration: .95, ease: 'expo.inOut' }, 2.82);
+  }
+
+  /* ---------- hero intro ---------- */
+  let heroChars = [];
+  function buildIntro() {
+    $$('.hero__line').forEach(line => {
+      const target = line.classList.contains('hero__l3') ? $('.hero__word', line) : line;
+      const s = SplitText.create(target, { type: 'chars', charsClass: 'char' });
+      heroChars.push(...s.chars);
+    });
+    const talk = $$('.js-talk').map(el => SplitText.create(el, { type: 'chars', charsClass: 'char' }));
+    talk.forEach(s => s.chars.forEach(c => {
+      if (!fine) return;
+      c.addEventListener('pointerenter', () => gsap.timeline()
+        .to(c, { '--w': 125, duration: .45, ease: 'expo.out' })
+        .to(c, { '--w': 100, duration: .9, ease: 'expo.out' }));
+    }));
+    window.__talkChars = talk.flatMap(s => s.chars);
+
+    if (reduce) return;
+    gsap.set(heroChars, { yPercent: 115, rotate: 7 });
+    gsap.set('.hero__meta > *, .hero__foot > *', { y: 24, autoAlpha: 0 });
+    gsap.set('.badge', { scale: 0, rotate: -90 });
+    gsap.set('.nav > *', { y: -30, autoAlpha: 0 });
+    intro
+      .to(heroChars, { yPercent: 0, rotate: 0, duration: 1.5, ease: 'expo.out', stagger: .028 })
+      .to('.nav > *', { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: .08 }, .3)
+      .to('.hero__meta > *', { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: .06 }, .45)
+      .to('.hero__foot > *', { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: .08 }, .7)
+      .to('.badge', { scale: 1, rotate: 0, duration: 1.6, ease: 'expo.out' }, .6)
+      .fromTo('.hero__l3', { '--w': 62 }, { '--w': 100, duration: 2, ease: 'expo.inOut' }, .2);
+  }
+
+  /* ---------- scroll choreography ---------- */
+  function buildScroll() {
+    // progress bar
+    gsap.to('.progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .3 } });
+
+    // hero proximity weight (desktop)
+    if (fine && !reduce) {
+      const hero = $('.hero');
+      const setters = heroChars.map(c => ({ c, set: gsap.quickTo(c, '--g', { duration: .6, ease: 'power3' }) }));
+      let inHero = false;
+      hero.addEventListener('pointerenter', () => (inHero = true));
+      hero.addEventListener('pointerleave', () => { inHero = false; setters.forEach(s => s.set(800)); });
+      gsap.ticker.add(() => {
+        if (!inHero) return;
+        setters.forEach(s => {
+          const r = s.c.getBoundingClientRect();
+          const d = Math.hypot(mouse.x - (r.left + r.width / 2), mouse.y - (r.top + r.height / 2));
+          s.set(900 - Math.max(0, 1 - d / 420) * 760);
+        });
+      });
+    }
+
+    const mm = gsap.matchMedia();
+    mm.add({
+      desk: '(min-width: 769px)',
+      mob: '(max-width: 768px)',
+      motion: '(prefers-reduced-motion: no-preference)',
+    }, ctx => {
+      const { desk, motion } = ctx.conditions;
+
+      // horizontal gallery (desktop + motion only)
+      const cards = $$('.card');
+      const idx = $('.js-idx');
+      if (desk && motion) {
+        const dist = () => track.scrollWidth - innerWidth;
+        const tween = gsap.to(track, {
+          x: () => -dist(), ease: 'none',
+          scrollTrigger: {
+            trigger: '.work', pin: true, start: 'top top', end: () => '+=' + dist(), scrub: 1, invalidateOnRefresh: true,
+            onUpdate: self => {
+              const i = Math.min(WORK.length, Math.floor(self.progress * WORK.length * 1.02) + 1);
+              const s = String(i).padStart(2, '0');
+              if (idx.textContent !== s) {
+                idx.textContent = s;
+                gsap.fromTo(idx, { yPercent: 60 * self.direction, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: .5, ease: 'expo.out' });
+              }
+            },
+          },
+        });
+        gsap.to('.work__bar i', { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.work', start: 'top top', end: () => '+=' + dist(), scrub: true } });
+        gsap.fromTo('.work__ghost', { xPercent: 0 }, { xPercent: -30, ease: 'none', scrollTrigger: { trigger: '.work', start: 'top top', end: () => '+=' + dist(), scrub: true } });
+        cards.forEach((c, i) => {
+          const img = $('img', c);
+          if (img) gsap.fromTo(img, { xPercent: -7 }, { xPercent: 7, ease: 'none', scrollTrigger: { trigger: c, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
+          gsap.fromTo($('.card__num', c), { xPercent: 60 }, { xPercent: -40, ease: 'none', scrollTrigger: { trigger: c, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
+          gsap.fromTo($('.card__media', c), { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', scrollTrigger: { trigger: c, containerAnimation: tween, start: 'left 100%', end: 'left 45%', scrub: true } });
+        });
+        gsap.from('.work__title', { y: 80, autoAlpha: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: '.work', start: 'top 70%' } });
+      } else if (motion) {
+        cards.forEach(c => {
+          gsap.from(c, { y: 70, autoAlpha: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: c, start: 'top 90%' } });
+          const img = $('img', c);
+          if (img) gsap.fromTo(img, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: c, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+
+      if (motion) {
+        // hero scroll-out: lines split apart, DIGITAL stretches
+        gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } })
+          .to('.hero__l1', { xPercent: -22, ease: 'none' }, 0)
+          .to('.hero__l2', { xPercent: 18, ease: 'none' }, 0)
+          .to('.hero__word', { '--ws': 25, xPercent: -4, ease: 'none' }, 0)
+          .to('.hero__l3 .serif', { autoAlpha: 0, x: -40, ease: 'none' }, 0)
+          .to('.hero__meta, .hero__foot', { autoAlpha: 0, y: -60, ease: 'none' }, 0)
+          .to('.badge', { rotate: 220, scale: .6, ease: 'none' }, 0);
+
+        // velocity marquees
+        const tracks = $$('.band__track').map(t => ({ t, x: 0, sk: 0, sp: +t.dataset.speed, half: 0 }));
+        const measure = () => tracks.forEach(o => (o.half = o.t.scrollWidth / 2));
+        measure(); addEventListener('resize', measure);
+        const marq = () => {
+          const dt = gsap.ticker.deltaRatio();
+          const v = gsap.utils.clamp(-60, 60, vel);
+          tracks.forEach(o => {
+            o.x -= (1.1 + Math.abs(v) * .32) * o.sp * dir * dt;
+            o.x = gsap.utils.wrap(-o.half, 0, o.x);
+            o.sk += ((-v * .35 * o.sp) - o.sk) * .1;
+            gsap.set(o.t, { x: o.x, skewX: gsap.utils.clamp(-14, 14, o.sk) });
+          });
+          vel *= .92;
+        };
+        gsap.ticker.add(marq);
+        gsap.from('.band', { scaleX: .2, autoAlpha: 0, duration: 1.4, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.bands', start: 'top 85%' } });
+
+        // story word fill
+        SplitText.create('.js-fill', {
+          type: 'words', wordsClass: 'word', autoSplit: true,
+          onSplit: self => gsap.fromTo(self.words, { opacity: .14 }, {
+            opacity: 1, ease: 'none', stagger: .12,
+            scrollTrigger: { trigger: '.js-fill', start: 'top 78%', end: 'bottom 42%', scrub: true },
+          }),
+        });
+        gsap.from('.story__row > *', { y: 60, autoAlpha: 0, duration: 1.3, ease: 'expo.out', stagger: .12, scrollTrigger: { trigger: '.story__row', start: 'top 85%' } });
+
+        // quote lines
+        SplitText.create('.js-lines', {
+          type: 'lines', linesClass: 'line', mask: 'lines', autoSplit: true,
+          onSplit: self => gsap.from(self.lines, { yPercent: 105, duration: 1.4, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: '.quote', start: 'top 70%' } }),
+        });
+        gsap.from('.quote__mark', { scale: 0, rotate: -40, transformOrigin: '30% 30%', duration: 1.6, ease: 'expo.out', scrollTrigger: { trigger: '.quote', start: 'top 70%' } });
+
+        // services rows reveal
+        gsap.from('.svc', { y: 80, autoAlpha: 0, duration: 1.3, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.svc-list', start: 'top 82%' } });
+        gsap.from('.svc__head h2', { y: 80, autoAlpha: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: '.svc__head', start: 'top 85%' } });
+
+        // price moment: bg flips to yellow, number stretches
+        const flip = on => gsap.to(document.documentElement, { '--bg': on ? '#f5c518' : '#0b0b0b', '--fg': on ? '#0b0b0b' : '#f1ede4', '--acc': on ? '#0b0b0b' : '#f5c518', duration: .8, ease: 'power3.out', overwrite: true });
+        ScrollTrigger.create({ trigger: '.price', start: 'top 55%', end: 'bottom 45%', onToggle: s => flip(s.isActive) });
+        gsap.fromTo('.price__num', { scale: .55, '--w': 62, rotate: -6 }, { scale: 1, '--w': 125, rotate: 0, ease: 'none', scrollTrigger: { trigger: '.price', start: 'top 80%', end: 'center center', scrub: 1 } });
+        gsap.from('.price__from, .price__copy, .price .label', { y: 50, autoAlpha: 0, duration: 1.2, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.price', start: 'top 55%' } });
+
+        // footer: parallax rise + talk chars
+        gsap.from('.footer__in', { yPercent: -28, ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top bottom', end: 'top 15%', scrub: true } });
+        gsap.from(window.__talkChars, { yPercent: 110, rotate: 6, duration: 1.4, ease: 'expo.out', stagger: .04, scrollTrigger: { trigger: '.talk', start: 'top 80%' } });
+        gsap.from('.talk__btn', { scale: 0, rotate: -120, duration: 1.6, ease: 'expo.out', scrollTrigger: { trigger: '.talk', start: 'top 75%' } });
+      } else {
+        // reduced motion: make sure everything is visible
+        gsap.set('.story__big', { opacity: 1 });
+      }
+
+    });
+
+    // stat counters
+    $$('.js-count').forEach(el => {
+      const to = +el.dataset.to, o = { v: 0 };
+      const fmtN = n => Math.round(n).toLocaleString('en-NZ');
+      if (reduce) { el.textContent = fmtN(to); return; }
+      ScrollTrigger.create({
+        trigger: el, start: 'top 88%', once: true,
+        onEnter: () => gsap.to(o, { v: to, duration: to > 100 ? 2.6 : 2, ease: 'expo.out', onUpdate: () => (el.textContent = fmtN(o.v)) }),
+      });
+    });
+    if (!reduce) gsap.from('.stat', { y: 60, autoAlpha: 0, duration: 1.2, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.stats', start: 'top 88%' } });
+
+    // services cursor-follow preview
+    if (fine && !reduce) {
+      const pv = $('.preview'), imgs = $$('img', pv);
+      let active = -1, on = false, px = mouse.x, py = mouse.y, rot = 0;
+      const set = gsap.quickSetter(pv, 'css');
+      gsap.ticker.add(() => {
+        const dt = gsap.ticker.deltaRatio();
+        const nx = px + (mouse.x - px) * .11 * dt, ny = py + (mouse.y - py) * .11 * dt;
+        rot += (gsap.utils.clamp(-22, 22, (nx - px) * 1.4) - rot) * .12;
+        px = nx; py = ny;
+        set({ x: px, y: py, rotate: rot });
+      });
+      const show = i => {
+        if (i === active) return;
+        const prev = active; active = i;
+        imgs.forEach((im, k) => gsap.set(im, { zIndex: k === i ? 2 : k === prev ? 1 : 0 }));
+        gsap.fromTo(imgs[i], { clipPath: 'inset(100% 0 0 0)', scale: 1.3 }, { clipPath: 'inset(0% 0 0 0)', scale: 1, duration: .8, ease: 'expo.out' });
+      };
+      $$('.svc').forEach(row => row.addEventListener('pointerenter', () => {
+        show(+row.dataset.img);
+        if (!on) { on = true; gsap.to(pv, { scale: 1, duration: .7, ease: 'expo.out', overwrite: 'auto' }); }
+      }));
+      const hide = () => { on = false; gsap.to(pv, { scale: 0, duration: .5, ease: 'expo.in', overwrite: 'auto' }); };
+      $('.svc-list').addEventListener('pointerleave', hide);
+      // scrolling moves rows out from under a still cursor without firing pointer events
+      window.addEventListener('scroll', () => {
+        const row = document.elementFromPoint(mouse.x, mouse.y)?.closest('.svc');
+        if (row) { show(+row.dataset.img); if (!on) { on = true; gsap.to(pv, { scale: 1, duration: .7, ease: 'expo.out', overwrite: 'auto' }); } }
+        else if (on) hide();
+      }, { passive: true });
+    }
+
+    // footer email follows cursor magnetically
+    if (fine && !reduce) {
+      const btn = $('.talk__btn'), zone = $('.footer');
+      const bx = gsap.quickTo(btn, 'x', { duration: 1.1, ease: 'power3' }), by = gsap.quickTo(btn, 'y', { duration: 1.1, ease: 'power3' });
+      zone.addEventListener('pointermove', e => {
+        const r = btn.getBoundingClientRect();
+        const cx = r.left + r.width / 2 - gsap.getProperty(btn, 'x'), cy = r.top + r.height / 2 - gsap.getProperty(btn, 'y');
+        bx(gsap.utils.clamp(-innerWidth * .32, innerWidth * .06, (e.clientX - cx) * .42));
+        by(gsap.utils.clamp(-220, 220, (e.clientY - cy) * .42));
+      });
+      zone.addEventListener('pointerleave', () => { bx(0); by(0); });
+    }
+
+    addEventListener('load', () => ScrollTrigger.refresh());
+  }
+})();
+</script>
+</body>
+</html>
